@@ -3,29 +3,30 @@ namespace App\Model;
 
 class PigLatinTranslator
 {
-    private static $vowels = ['a', 'e', 'i', 'o', 'u'];
-
     public static function translate(string $input): string
     {
+        // Rozdělíme vstup na slova a převedeme je na malá písmena
         $words = explode(' ', strtolower($input));
         $result = [];
 
         foreach ($words as $word) {
-            $firstLetter = substr($word, 0, 1);
+            // Najdeme pozici první samohlásky ve slově
+            $firstVowelPos = strpos($word, 'a') ?: strpos($word, 'e') ?: strpos($word, 'i') ?: strpos($word, 'o') ?: strpos($word, 'u');
 
-            if (in_array($firstLetter, self::$vowels)) {
+            if ($firstVowelPos === false || $firstVowelPos === 0) {
+                // Slovo začíná souhláskovým shlukem nebo žádnou samohláskou
                 $translated = $word . 'ay';
-            } else if (substr($word, 0, 2) === 'qu') {
-                $restOfWord = substr($word, 2);
-                $translated = $restOfWord . 'quay';
             } else {
-                $restOfWord = substr($word, 1);
-                $translated = $restOfWord . $firstLetter . 'ay';
+                // Slovo začíná samohláskou
+                $prefix = substr($word, 0, $firstVowelPos);
+                $restOfWord = substr($word, $firstVowelPos);
+                $translated = $restOfWord . $prefix . 'ay';
             }
 
             $result[] = $translated;
         }
 
+        // Sestavíme výslednou větu a vrátíme ji
         return ucfirst(implode(' ', $result));
     }
 }
