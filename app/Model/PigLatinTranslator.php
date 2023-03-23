@@ -10,14 +10,21 @@ class PigLatinTranslator
         $result = [];
 
         foreach ($words as $word) {
-            // Najdeme pozici první samohlásky ve slově
-            $firstVowelPos = strpos($word, 'a') ?: strpos($word, 'e') ?: strpos($word, 'i') ?: strpos($word, 'o') ?: strpos($word, 'u');
-
-            if ($firstVowelPos === false || $firstVowelPos === 0) {
-                // Slovo začíná souhláskovým shlukem nebo žádnou samohláskou
+            // Najdeme pozici první samohlásky ve slově za případným "qu"
+            $quPos = strpos($word, 'qu');
+            $firstVowelPos = false;
+            if ($quPos !== false && $quPos < strlen($word) - 1) {
+                $firstVowelPos = strcspn(substr($word, $quPos + 2), 'aeiou') + $quPos + 2;
+            }
+            if ($firstVowelPos === false) {
+                // Slovo začíná souhláskovým shlukem nebo "qu"
+                $firstVowelPos = strcspn($word, 'aeiou');
+            }
+            if ($firstVowelPos === 0) {
+                // Slovo začíná samohláskou
                 $translated = $word . 'ay';
             } else {
-                // Slovo začíná samohláskou
+                // Slovo začíná souhláskovým shlukem nebo "qu"
                 $prefix = substr($word, 0, $firstVowelPos);
                 $restOfWord = substr($word, $firstVowelPos);
                 $translated = $restOfWord . $prefix . 'ay';
@@ -27,6 +34,6 @@ class PigLatinTranslator
         }
 
         // Sestavíme výslednou větu a vrátíme ji
-        return ucfirst(implode(' ', $result));
+        return implode(' ', $result);
     }
 }
