@@ -12,14 +12,15 @@ class PigLatinTranslator
 
         foreach ($words as $word) {
             $firstLetter = substr($word, 0, 1);
-            $secondLetter = substr($word, 1, 1);
 
-            if (in_array($firstLetter, self::$vowels) ||
-                ($firstLetter == 'q' && $secondLetter == 'u')) {
+            if (in_array($firstLetter, self::$vowels)) {
                 $translated = $word . 'ay';
-            } else {
+            } else if (substr($word, 0, 2) === 'qu') {
                 $restOfWord = substr($word, 2);
-                $translated = $restOfWord . $firstLetter . $secondLetter . 'ay';
+                $translated = $restOfWord . 'quay';
+            } else {
+                $restOfWord = substr($word, 1);
+                $translated = $restOfWord . $firstLetter . 'ay';
             }
 
             $result[] = $translated;
